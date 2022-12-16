@@ -34,11 +34,17 @@ while True:
         case "Edit":
             edit_task = values['todo_list'][0]
             new_task = values['new_task']
-
             todo_list = functions.get_todo_list()
             index = todo_list.index(edit_task)
             todo_list[index] = new_task + "\n"
             functions.write_todo_list(todo_list)
+            window['todo_list'].update(values=todo_list)
+        case "Complete":
+            comp_task = values['todo_list'][0]
+            comp_todos = functions.get_todo_list()
+            comp_todo_no = comp_todos.index(comp_task)
+            comp_todos.pop(comp_todo_no)
+            functions.write_todo_list(comp_todos)
             window['todo_list'].update(values=todo_list)
         case "todo_list":
             window['new_task'].update(value=values["todo_list"][0].strip('\n'))
