@@ -1,6 +1,18 @@
 import functions
 import PySimpleGUI as psg
 import time
+import os
+
+SUBDIR = 'files'
+TASKLIST = 'todos.txt'
+FILEPATH = SUBDIR + "/" + TASKLIST
+
+if not os.path.exists(SUBDIR):
+    os.mkdir(SUBDIR)
+
+if not os.path.exists(FILEPATH):
+    with open(FILEPATH, 'w') as file:
+        pass
 
 #psg.theme("DarkGrey12")
 task_theme = psg.theme("Dark")
@@ -12,6 +24,11 @@ input_box = psg.InputText(tooltip="Enter a task",
                           key="new_task",
                           size=[40, 1])
 add_button = psg.Button("Add")
+#add_button = psg.Button(size=2,
+#                        image_source="files/add.png",
+#                        mouseover_colors="LightBlue2",
+#                        tooltip="Add task",
+#                        key="Add")
 list_box = psg.Listbox(values=functions.get_todo_list(),
                        key="todo_list",
                        enable_events=True,
