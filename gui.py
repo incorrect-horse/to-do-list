@@ -1,16 +1,27 @@
 import functions
 import PySimpleGUI as psg
+import time
 
+#psg.theme("DarkGrey12")
+task_theme = psg.theme("Dark")
+#psg.theme("Black")
+
+clock = psg.Text("", key="clock")
 label = psg.Text("Enter a new task")
-input_box = psg.InputText(tooltip="Enter a task", key="new_task", size=[40, 1])
+input_box = psg.InputText(tooltip="Enter a task",
+                          key="new_task",
+                          size=[40, 1])
 add_button = psg.Button("Add")
-list_box = psg.Listbox(values=functions.get_todo_list(), key="todo_list",
-                       enable_events=True, size=[45, 10])
-edit_button = psg.Button("    Edit    ")
-comp_button = psg.Button("Complete")
+list_box = psg.Listbox(values=functions.get_todo_list(),
+                       key="todo_list",
+                       enable_events=True,
+                       size=[45, 10])
+edit_button = psg.Button("Edit", size=9)
+comp_button = psg.Button("Complete", size=9)
 exit_button = psg.Button("Exit")
 
-l_col_cont = [[label],
+l_col_cont = [[clock],
+             [label],
              [add_button, input_box],
              [list_box],
              [exit_button]]
@@ -28,46 +39,55 @@ window = psg.Window(
         layout,
         font=('Helvetica', 15))
 
-#window = psg.Window(
-#    'My To-Do App',
-#        layout=[
-#            [label],
-#            [add_button, input_box],
-#            [list_box, edit_button],
-#            [comp_button, exit_button]],
-#        font=('Helvetica', 15))
-
 while True:
+    event, values = window.read(timeout=200)
     event, values = window.read()
-    print(1, event)
-    print(2, values)
-    print(3, values['todo_list'])
+    window['clock'].update(value=time.strftime("%b %d %Y, %H:%M:%S"))
+    #print(1, event)
+    #print(2, values)
+    #print(3, values['todo_list'])
     match event:
         case "Add":
-            todo_list = functions.get_todo_list()
-            new_todo = values['new_task'].capitalize() + "\n"
-            todo_list.append(new_todo)
-            functions.write_todo_list(todo_list)
-            window['todo_list'].update(values=todo_list)
-        case "    Edit    ":
-            edit_task = values['todo_list'][0]
-            new_task = values['new_task']
-            todo_list = functions.get_todo_list()
-            index = todo_list.index(edit_task)
-            todo_list[index] = new_task + "\n"
-            functions.write_todo_list(todo_list)
-            window['todo_list'].update(values=todo_list)
+            if values['new_task'].strip() == "":
+                psg.popup("Please input a task to add.",
+                          font=('Helvetica', 15))
+            else:
+                todo_list = functions.get_todo_list()
+                new_todo = values['new_task'].strip().capitalize() + "\n"
+                todo_list.append(new_todo)
+                functions.write_todo_list(todo_list)
+                window['todo_list'].update(values=todo_list)
+        case "Edit":
+            try:
+                edit_task = values['todo_list'][0]
+                new_task = values['new_task']
+                todo_list = functions.get_todo_list()
+                index = todo_list.index(edit_task)
+                todo_list[index] = new_task + "\n"
+                functions.write_todo_list(todo_list)
+                window['todo_list'].update(values=todo_list)
+            except IndexError:
+                psg.popup("Please select a task first.",
+                          font=('Helvetica', 15))
         case "Complete":
-            comp_task = values['todo_list'][0]
-            comp_todos = functions.get_todo_list()
-            comp_todos.remove(comp_task)
-            functions.write_todo_list(comp_todos)
-            window['todo_list'].update(values=comp_todos)
-            window['new_task'].update(value="")
+            try:
+                comp_task = values['todo_list'][0]
+                comp_todos = functions.get_todo_list()
+                comp_todos.remove(comp_task)
+                functions.write_todo_list(comp_todos)
+                window['todo_list'].update(values=comp_todos)
+                window['new_task'].update(value="")
+            except IndexError:
+                psg.popup("Please select a task first.",
+                          font=('Helvetica', 15))
         case "Exit":
             break
         case "todo_list":
-            window['new_task'].update(value=values["todo_list"][0].strip('\n'))
+            try:
+                window['new_task'].update(value=values["todo_list"][0].strip('\n'))
+            except IndexError:
+                psg.popup("Type a new task and click Add to get started.",
+                          font=('Helvetica', 15))
         case psg.WIN_CLOSED:
             break
 
