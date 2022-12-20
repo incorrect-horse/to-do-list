@@ -9,13 +9,17 @@ while True:
     usr_actn = usr_actn.strip().lower()
 
     if usr_actn.startswith('add') or usr_actn.startswith('a'):
-        todo = usr_actn.split(" ", 1)[1]
+        try:
+            todo = usr_actn.split(" ", 1)[1]
 
-        todos = get_todo_list()
+            todos = get_todo_list()
 
-        todos.append(todo + '\n')
+            todos.append(todo + '\n')
 
-        write_todo_list(todos)
+            write_todo_list(todos)
+        except IndexError:
+            print("\nTask needed after [a]add command.")
+            continue
 
     elif usr_actn.startswith('show') or usr_actn.startswith('s'):
         todos = get_todo_list()
@@ -34,8 +38,8 @@ while True:
             todos[task_no] = new_item + "\n"
             write_todo_list(todos)
 
-        except ValueError:
-            print("Command is not valid.")
+        except:
+            print("\nCommand is not valid.")
             continue
 
     elif usr_actn.startswith('complete') or usr_actn.startswith('c'):
@@ -56,7 +60,7 @@ while True:
 
             print("\nTask '" + comp_task.upper() + "' was removed from todo list.")
         except:
-            print("There is no item with that number.")
+            print("\nThere is no item with that number.")
             continue
 
     elif usr_actn.startswith('exit') or usr_actn.startswith('x'):
