@@ -10,8 +10,8 @@ def get_todo_list(todo_list=FILEPATH):
     return clean_list
 
 
-def write_todo_list(todo_write, todo_list=FILEPATH):
-    with open(todo_list, 'w') as file_write:
+def write_todo_list(todo_write, todo_list=FILEPATH, write_state='w'):
+    with open(todo_list, write_state) as file_write:
         file_write.writelines(todo_write)
 
 
